@@ -1,27 +1,18 @@
-import { createHtmlElement, createSvgElement } from "../helpers";
-
-const data = [
-  { content: "free shipping", color: "lightyellow", weight: 0.1 },
-  { content: "free shipping free shipping", color: "#DFD7B0", weight: 0.2 },
-  { content: "10% off any item 11", color: "#FBCFA8", weight: 0.2 },
-  {
-    content:
-      "free free free free free free free free free free free free free free free free free free free",
-    color: "#EFA754",
-    weight: 0.2,
-  },
-  { content: "free shipping 📦", color: "#B6BCB0", weight: 0.3 },
-];
+import {
+  createHtmlElement,
+  createSvgElement,
+} from "../helpers";
+import sampleData from "./sampleData.json";
 
 const viewBoxWidth = 400;
 const viewBoxHeight = 400;
 
-const totalAngle = 360;
 const centerPointX = viewBoxWidth / 2;
 const centerPointY = viewBoxHeight / 2;
 const radius = 200;
 
 const createWheelSlice = (item, offset) => {
+  const totalAngle = 360;
   const startAngle = (totalAngle * offset) % totalAngle;
   const endAngle = startAngle + totalAngle * item.weight;
   const startAngleRad = (startAngle * Math.PI) / 180;
@@ -44,11 +35,14 @@ const createWheelSlice = (item, offset) => {
   return {
     path,
     pathHeight: (item.weight * totalAngle * radius * Math.PI) / 360,
-    midpointAngle: (startAngle + endAngle) / 2,
+    angles: {
+      startAngle,
+      endAngle,
+    },
   };
 };
 
-const createTextBox = (item, midpointAngle, pathHeight) => {
+const createTextBox = (className, item, midpointAngle, pathHeight) => {
   const midpointAngleRad = (midpointAngle * Math.PI) / 180;
   const textBoxX = centerPointX + Math.sin(midpointAngleRad) * (radius / 2);
   const textBoxY = centerPointY - Math.cos(midpointAngleRad) * (radius / 2);
@@ -57,6 +51,7 @@ const createTextBox = (item, midpointAngle, pathHeight) => {
   const textBoxHeight = pathHeight;
 
   const textBox = createSvgElement("foreignObject");
+  textBox.setAttribute("class", `${className}`);
   textBox.setAttribute("x", `${textBoxX - textBoxWidth / 2}`);
   textBox.setAttribute("y", `${textBoxY - textBoxHeight / 2}`);
   textBox.setAttribute("width", `${textBoxWidth}`);
@@ -66,18 +61,26 @@ const createTextBox = (item, midpointAngle, pathHeight) => {
     `rotate(${midpointAngle + 90}, ${textBoxX}, ${textBoxY})`,
   );
 
-  const div = createHtmlElement("div");
+  const container = createHtmlElement("div");
 
-  div.style.width = "80%";
-  div.style.height = "80%";
-  div.style.margin = "8px";
-  div.style.fontSize = `20px`;
-  div.style.display = "flex";
-  div.style.alignItems = "center";
-  div.style.justifyContent = "center";
-  div.innerHTML = item.content;
+  container.style.width = "80%";
+  container.style.height = "80%";
+  container.style.margin = "8px";
+  container.style.fontSize = `20px`;
+  container.style.display = "flex";
+  container.style.alignItems = "center";
+  container.style.justifyContent = "center";
 
-  textBox.appendChild(div);
+  const editableEl = document.createElement("div");
+  editableEl.setAttribute("contentEditable", "true");
+  editableEl.innerHTML = item.content;
+  editableEl.addEventListener("input", (e) => {
+    item.content = e.target.innerHTML;
+  });
+  editableEl.style.width = "100%";
+
+  container.appendChild(editableEl)
+  textBox.appendChild(container);
 
   return textBox;
 };
@@ -105,12 +108,13 @@ const createButton = ({
   buttonContainer.appendChild(circle);
   buttonContainer.addEventListener("click", onClick);
 
-  // Create the arrow path
+  // Create the arrow path from arrowAngle
+
   const arrowPath = createSvgElement("path");
   const arrowHeight = 30;
-  const arrowWidth = 20
+  const arrowWidth = 20;
   const arrowX = centerPointX;
-  const arrowY = centerPointY - buttonSize / 2 - arrowHeight + 10; // Position the arrow on top of the button, +10 is to overlap arrow and cirlce
+  const arrowY = centerPointY - buttonSize / 2 - arrowHeight + 10;
   arrowPath.setAttribute(
     "d",
     `M${arrowX},${arrowY} L${arrowX - arrowWidth},${arrowY + arrowHeight} L${
@@ -137,52 +141,119 @@ const createButton = ({
   return buttonContainer;
 };
 
-const createWheelSlices = ({ className = "wheel-slices" } = {}) => {
-  const wheelContainer = createSvgElement("g");
-  wheelContainer.setAttribute("class", `${className}`);
-
+const createWheelSlices = (options = []) => {
+  const sliceAngles = [];
+  const slicePaths = [];
   let cumulativeWeight = 0;
-  data.forEach((item) => {
+  options.forEach((item) => {
     const offset = cumulativeWeight;
     cumulativeWeight += item.weight;
-    const { path, pathHeight, midpointAngle } = createWheelSlice(item, offset);
-    wheelContainer.appendChild(path);
+    const { path, pathHeight, angles } = createWheelSlice(item, offset);
+    slicePaths.push(path);
 
-    const textBox = createTextBox(item, midpointAngle, pathHeight);
-    wheelContainer.appendChild(textBox);
+    const textBox = createTextBox(
+      "text-box",
+      item,
+      (angles.startAngle + angles.endAngle) / 2,
+      pathHeight,
+    );
+    slicePaths.push(textBox);
+
+    sliceAngles.push(angles);
   });
-  return wheelContainer;
+  return {
+    angles: sliceAngles,
+    paths: slicePaths,
+  };
 };
 
-const createWheel = ({ className = "wheel" } = {}) => {
-  const svg = createSvgElement("svg");
-  svg.setAttribute("class", className);
-  svg.setAttribute("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
+const createWheelSVG = ({
+  value = "",
+  options = [],
+  onChange = () => {},
+} = {}) => {
+  const wheel = createSvgElement("svg");
+  wheel.setAttribute("class", "wheel");
+  wheel.setAttribute("viewBox", `0 0 ${viewBoxWidth} ${viewBoxHeight}`);
 
-  const handleSpin = () => {
-    const randomAngle = Math.floor(Math.random() * 360);
-    wheelContainer.style.transform = `rotate(${randomAngle}deg)`;
-    wheelContainer.style.transformOrigin = "center";
+  const slicesContainer = createSvgElement("g");
+  slicesContainer.setAttribute("class", `slices`);
+
+  const { angles, paths: slicePaths } = createWheelSlices(options);
+  slicePaths.forEach((path) => {
+    slicesContainer.appendChild(path);
+  });
+  wheel.appendChild(slicesContainer);
+
+
+  let rotationAngle = 0;
+  const spin = () => {
+    const randomIndex = Math.floor(Math.random() * options.length);
+    const randomAngle = (randomIndex / options.length) * 360;
+    rotationAngle += 3600 + randomAngle; // Accumulate rotation angles
+
+    let duration = 5000; // Transition duration in milliseconds
+    let interval = 0; // Interval to check the current selecting slice in milliseconds
+    const startTime = performance.now(); // Start time of the animation
+
+    let timer = setInterval(() => {
+      const elapsedTime = performance.now() - startTime; // Elapsed time since animation start
+      const progress = elapsedTime / duration; // Progress of the animation in the range [0, 1]
+
+      const currentRotationAngle = rotationAngle * progress; // Current rotation angle based on progress
+
+      const absoluteArrowAngle = (currentRotationAngle + 360) % 360;
+      let selectedSlice = null;
+
+      angles.forEach(({ startAngle, endAngle }, index) => {
+        if (absoluteArrowAngle >= startAngle && absoluteArrowAngle < endAngle) {
+          selectedSlice = options[index];
+        }
+      });
+
+      onChange(selectedSlice);
+      // Clear the interval if the animation is completed
+      if (elapsedTime >= duration) {
+        clearInterval(timer);
+      }
+
+    }, interval);
+
+    slicesContainer.style.transform = `rotate(${-rotationAngle}deg)`;
+    slicesContainer.style.transformOrigin = "center";
+    slicesContainer.style.transition = `transform ${duration}ms ease-out`;
   };
 
-  const wheelContainer = createWheelSlices();
+
+
   const button = createButton({
-    onClick: handleSpin,
+    onClick: spin,
   });
 
-  svg.appendChild(wheelContainer);
-  svg.appendChild(button);
-  return svg;
+  wheel.appendChild(button);
+  return wheel;
 };
 
 const init = () => {
-  const wheelSVG = createWheel();
+  const handleOnChange = (value) => {
+    const label = document.querySelector("#wheel-label");
+    if(value.content) {
+      label.innerHTML = value.content;
+    }
+  };
+
+  const wheelSVG = createWheelSVG({
+    className: "wheel",
+    value: "",
+    options: sampleData,
+    onChange: handleOnChange,
+  });
 
   const wheelContainer = createHtmlElement("div");
   wheelContainer.classList.add("wheel-box");
   wheelContainer.appendChild(wheelSVG);
 
-  const selector = ".wheel-section";
+  const selector = "#wheel";
   const container = document.querySelector(selector);
   container.appendChild(wheelContainer);
 };

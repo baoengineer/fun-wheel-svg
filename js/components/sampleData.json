@@ -1,0 +1,27 @@
+[
+  {
+    "content": "free shipping",
+    "color": "lightyellow",
+    "weight": 0.1
+  },
+  {
+    "content": "free shipping free shipping",
+    "color": "#DFD7B0",
+    "weight": 0.2
+  },
+  {
+    "content": "10% off any item 11",
+    "color": "#FBCFA8",
+    "weight": 0.2
+  },
+  {
+    "content": "free free free free free free free free free free free free free free free free free free free",
+    "color": "#EFA754",
+    "weight": 0.2
+  },
+  {
+    "content": "free shipping 📦",
+    "color": "#B6BCB0",
+    "weight": 0.3
+  }
+]

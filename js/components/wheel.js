@@ -114,56 +114,56 @@ const wheelBox = document.getElementById("wheel");
 // wheelBox.appendChild(svg);
 
 const spinButton = document.getElementById("button");
-// let intervalId = null;
-// const maxSpinSpeed = 500; // Adjust as needed
-// const accelerationRate = 10; // Adjust as needed
-// const spinAcceleration = 0.2;
-// const minSpinSpeed = 1;
-// let spinSpeed = 20;
-// let spinning = false;
-//
+let intervalId = null;
+const maxSpinSpeed = 500; // Adjust as needed
+const accelerationRate = 10; // Adjust as needed
+const spinAcceleration = 0.2;
+const minSpinSpeed = 1;
+let spinSpeed = 20;
+let spinning = false;
+
 // spinButton.addEventListener("click", startSpinning);
-//
-// function spin(timestamp, currentRotation) {
-//   spinning = true;
-//
-//   currentRotation += spinSpeed;
-//   svg.style.transform = `rotate(${currentRotation}deg)`;
-//
-//   spinSpeed -= spinAcceleration;
-//   spinSpeed = Math.max(spinSpeed, minSpinSpeed);
-//
-//   if (spinSpeed >= minSpinSpeed) {
-//     requestAnimationFrame(spin);
-//   } else {
-//     const normalizedIndex = (randomIndex + numOptions) % numOptions;
-//     console.log(data[normalizedIndex]);
-//     spinning = false; // Set spinning to false when the spin ends
-//     resetButton();
-//   }
-//
-// function startSpinning() {
-//   if (spinning) {
-//     return; // Prevent multiple concurrent spins
-//   }
-//
-//   const numOptions = data.length;
-//   const randomIndex = getRandomIndex(numOptions);
-//   const landedRotation = -(randomIndex * (360 / numOptions) + 3600);
-//   const svg = document.getElementById("svg");
-//
-//   spinButton.removeEventListener("click", startSpinning);
-//   spinButton.addEventListener("mousedown", startCharging);
-//   spinButton.addEventListener("mouseup", releaseWheel);
-//   spinButton.addEventListener("mouseleave", releaseWheel);
-//
-//   let currentRotation = landedRotation;
-//
-//
-//
-//
-//   requestAnimationFrame(spin);
-// }
+
+function spin(timestamp, currentRotation) {
+  spinning = true;
+
+  currentRotation += spinSpeed;
+  svg.style.transform = `rotate(${currentRotation}deg)`;
+
+  spinSpeed -= spinAcceleration;
+  spinSpeed = Math.max(spinSpeed, minSpinSpeed);
+
+  if (spinSpeed >= minSpinSpeed) {
+    requestAnimationFrame(spin);
+  } else {
+    const normalizedIndex = (randomIndex + numOptions) % numOptions;
+    console.log(data[normalizedIndex]);
+    spinning = false; // Set spinning to false when the spin ends
+    resetButton();
+  }
+
+function startSpinning() {
+  if (spinning) {
+    return; // Prevent multiple concurrent spins
+  }
+
+  const numOptions = data.length;
+  const randomIndex = getRandomIndex(numOptions);
+  const landedRotation = -(randomIndex * (360 / numOptions) + 3600);
+  const svg = document.getElementById("svg");
+
+  spinButton.removeEventListener("click", startSpinning);
+  spinButton.addEventListener("mousedown", startCharging);
+  spinButton.addEventListener("mouseup", releaseWheel);
+  spinButton.addEventListener("mouseleave", releaseWheel);
+
+  let currentRotation = landedRotation;
+
+
+
+
+  requestAnimationFrame(spin);
+}
 //
 // function startCharging() {
 //   intervalId = setInterval(chargeSpeed, 100);
@@ -183,14 +183,14 @@ const spinButton = document.getElementById("button");
 //     }
 //   }
 // }
-//
-// function resetButton() {
-//   spinButton.removeEventListener("mousedown", startCharging);
-//   spinButton.removeEventListener("mouseup", releaseWheel);
-//   spinButton.removeEventListener("mouseleave", releaseWheel);
-//   spinButton.addEventListener("click", startSpinning);
-// }
-//
-// function getRandomIndex(max) {
-//   return Math.floor(Math.random() * max);
-// }
+
+function resetButton() {
+  // spinButton.removeEventListener("mousedown", startCharging);
+  // spinButton.removeEventListener("mouseup", releaseWheel);
+  // spinButton.removeEventListener("mouseleave", releaseWheel);
+  spinButton.addEventListener("click", startSpinning);
+}
+
+function getRandomIndex(max) {
+  return Math.floor(Math.random() * max);
+}

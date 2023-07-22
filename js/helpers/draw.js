@@ -7,3 +7,7 @@ export const createSvgElement= (tagName) => {
 export const createHtmlElement= (tagName) => {
   return document.createElement(tagName);
 }
+
+export const getRandomIndex = (max) => {
+  return Math.floor(Math.random() * max);
+}

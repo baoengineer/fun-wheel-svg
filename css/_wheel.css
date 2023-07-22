@@ -2,8 +2,8 @@
   position: relative;
   height: 100%;
   width: 100%;
-  min-height: 400px;
-  min-width: 400px;
+  min-height: 200px;
+  min-width: 200px;
 }
 
 .wheel-box .wheel {
@@ -17,7 +17,10 @@
   align-items: center;
   justify-content: center;
   border: none;
-  cursor: pointer;
+}
+.wheel-box .text-box {
+  overflow: hidden;
+
 }
 .wheel-box .button {
   position: absolute;

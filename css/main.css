@@ -2,12 +2,22 @@
 @import "_wheel.css";
 
 main {
-  width: 70%;
-  height: 100vh;
-}
-.box label {
-  font-size: 14px;
-  display: flex;
-  justify-content: center;
   width: 100%;
+}
+
+.wheel-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+
+}
+.wheel-section .label {
+  font-size: 20px;
+  width: 30%;
+}
+
+.wheel-section .box {
+  height: 40%;
+  width: 40%;
 }
