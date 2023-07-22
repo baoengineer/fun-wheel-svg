@@ -1,0 +1,39 @@
+.wheel-box {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  min-height: 400px;
+  min-width: 400px;
+}
+
+.wheel-box .wheel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+}
+.wheel-box .button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+
+}
+.wheel-box .button button {
+  background: none;
+  border: none;
+  width: 100%;
+  height: 100%;
+  border-radius: 100%;
+  cursor: pointer;
+}
