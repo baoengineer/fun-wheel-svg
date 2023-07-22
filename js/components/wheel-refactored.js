@@ -168,7 +168,6 @@ const createWheelSlices = (options = []) => {
 };
 
 const createWheelSVG = ({
-  value = "",
   options = [],
   onChange = () => {},
 } = {}) => {
@@ -192,12 +191,12 @@ const createWheelSVG = ({
     const randomAngle = (randomIndex / options.length) * 360;
     rotationAngle += 3600 + randomAngle; // Accumulate rotation angles
 
-    let duration = 5000; // Transition duration in milliseconds
-    let interval = 0; // Interval to check the current selecting slice in milliseconds
-    const startTime = performance.now(); // Start time of the animation
+    let duration = 5000;
+    let interval = 0;
+    const startTime = performance.now();
 
     let timer = setInterval(() => {
-      const elapsedTime = performance.now() - startTime; // Elapsed time since animation start
+      const elapsedTime = performance.now() - startTime;
       const progress = elapsedTime / duration; // Progress of the animation in the range [0, 1]
 
       const currentRotationAngle = rotationAngle * progress; // Current rotation angle based on progress
@@ -244,7 +243,6 @@ const init = () => {
 
   const wheelSVG = createWheelSVG({
     className: "wheel",
-    value: "",
     options: sampleData,
     onChange: handleOnChange,
   });
