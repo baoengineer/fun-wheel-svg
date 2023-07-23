@@ -5,7 +5,7 @@
   "license": "ISC",
   "author": "bao",
   "scripts": {
-    "build": "parcel build src/index.html --out-dir dist --public-url ./",
+    "build": "parcel build index.html",
     "dev": "parcel index.html --open",
     "start": "npm run build && npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -15,6 +15,7 @@
     "@babel/preset-env": "^7.22.9",
     "@parcel/packager-raw-url": "^2.9.3",
     "@parcel/transformer-webmanifest": "^2.9.3",
+    "buffer": "^6.0.3",
     "eslint": "^8.45.0",
     "parcel": "^2.9.3",
     "parcel-bundler": "^1.12.4",
